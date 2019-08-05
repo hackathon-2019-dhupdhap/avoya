@@ -22,9 +22,9 @@ CREATE TABLE `users` (
 CREATE TABLE `emergency_contacts` (
  `id` int NOT NULL AUTO_INCREMENT,
  `user_id` int NOT NULL,
- `contact_1` int NOT NULL,
- `contact_2` int NOT NULL,
- `contact_3` int NOT NULL,
+ `contact_1` varchar(15) NOT NULL,
+ `contact_2` varchar(15) NOT NULL,
+ `contact_3` varchar(15) NOT NULL,
  `created_by` int NOT NULL,
  `created_at` datetime NOT NULL,
  `updated_by` int NOT NULL,
@@ -46,5 +46,8 @@ CREATE TABLE `stations` (
  `lon` DECIMAL(11,8),
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
+
+
+
 
 
