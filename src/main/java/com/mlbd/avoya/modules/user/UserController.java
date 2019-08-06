@@ -1,10 +1,12 @@
 package com.mlbd.avoya.modules.user;
 
 import com.mlbd.avoya.Models.UserDTO;
+import com.mlbd.avoya.Models.UserModel;
 import com.mlbd.avoya.Repositories.EmergencyContactRepository;
 import com.mlbd.avoya.Repositories.UserRepository;
 import com.mlbd.avoya.schemas.EmergencyContact;
 import com.mlbd.avoya.schemas.User;
+import com.mlbd.models.AccountDTO;
 import com.mlbd.repositories.AccountRepository;
 import com.mlbd.repositories.RoleRepository;
 import com.mlbd.repositories.RoleUserRepository;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -112,6 +115,23 @@ public class UserController {
     Map<String, Integer> output = new HashMap<>();
     output.put("User id", user.getId());
     return new ResponseEntity<Map<String, Integer>>(output, HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "{id}", method = RequestMethod.GET)
+  public ResponseEntity<UserModel> get(@PathVariable("id") final int id) {
+    log.info("Fetching details of user with id {}", id);
+    User user = userRepository.findByAccountId(id);
+    Account account = accountRepository.getOne(id);
+    UserModel userModel = UserModel.builder()
+        .accountId(user.getAccountId())
+        .address(user.getAddress())
+        .contactNumber(account.getEmail())
+        .currentTracker(user.getCurrentTracker())
+        .name(user.getName())
+        .nid(user.getNid())
+        .build();
+    
+    return new ResponseEntity<UserModel>(userModel, HttpStatus.OK);
   }
 
 }
