@@ -11,6 +11,9 @@ import com.mlbd.repositories.RoleUserRepository;
 import com.mlbd.schemas.Account;
 import com.mlbd.schemas.Role;
 import com.mlbd.schemas.RoleUser;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -86,9 +89,28 @@ public class UserController {
     return new ResponseEntity<Map<String, Integer>>(output, HttpStatus.CREATED);
   }
 
-//  @RequestMapping(method = RequestMethod.PATCH)
-//  public ResponseEntity<Map<String, Integer>> create(@RequestBody final UserDTO userDTO) {
-//    
-//  }
+  
+  @RequestMapping(value = {"/id"} ,method = RequestMethod.PATCH)
+  public ResponseEntity<Map<String, Integer>> update(@RequestBody final UserDTO userDTO) {
+    log.info("Updating user with - {}", userDTO);
+    
+    User user = new User();
+    
+    if((userDTO.getCurrentTracker() != null) && (!userDTO.getCurrentTracker().isEmpty())) {
+      user.setCurrentTracker(userDTO.getCurrentTracker());
+    }
+    
+    if((userDTO.getLatitude()!=null) && (userDTO.getLatitude()!=null)) {
+      GeometryFactory geometryFactory = new GeometryFactory();
+      Point point = geometryFactory.createPoint(new Coordinate(userDTO.getLongitude(), userDTO.getLatitude()));
+      user.setCurrentLocation(point);
+    }
+    
+    userRepository.save(user);
+
+    Map<String, Integer> output = new HashMap<>();
+    output.put("User id", user.getId());
+    return new ResponseEntity<Map<String, Integer>>(output, HttpStatus.OK);
+  }
 
 }

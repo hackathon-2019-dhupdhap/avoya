@@ -31,5 +31,9 @@ public class UserDTO {
   private String contact_2;
 
   private String contact_3;
+  
+  private Double latitude;
+  
+  private Double longitude;
 
 }
