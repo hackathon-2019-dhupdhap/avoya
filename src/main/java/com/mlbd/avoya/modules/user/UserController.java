@@ -43,7 +43,6 @@ public class UserController {
   public ResponseEntity<Map<String, Integer>> create(@RequestBody final UserDTO userDTO) {
 
     log.info("Creating new user with request body - {}", userDTO);
-
     Account account = Account.builder().email(userDTO.getContactNumber())
         .password(new BCryptPasswordEncoder().encode(userDTO.getPassword()))
         .enabled(true)
@@ -86,5 +85,10 @@ public class UserController {
     output.put("User id", user.getId());
     return new ResponseEntity<Map<String, Integer>>(output, HttpStatus.CREATED);
   }
+
+//  @RequestMapping(method = RequestMethod.PATCH)
+//  public ResponseEntity<Map<String, Integer>> create(@RequestBody final UserDTO userDTO) {
+//    
+//  }
 
 }

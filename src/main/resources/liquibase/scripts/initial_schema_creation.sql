@@ -17,8 +17,6 @@ CREATE TABLE `users` (
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
-
-
 CREATE TABLE `emergency_contacts` (
  `id` int NOT NULL AUTO_INCREMENT,
  `user_id` int NOT NULL,
@@ -38,16 +36,12 @@ CREATE TABLE `emergency_contacts` (
  	ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE `stations` (
  `id` int NOT NULL AUTO_INCREMENT,
- `location` varchar(50),
- `lat` DECIMAL(10,8),
- `lon` DECIMAL(11,8),
+ `name` varchar(50) NOT NULL,
+ `location` POINT
+ `contact` varchar(15) NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-
-
-
 
 
