@@ -1,5 +1,6 @@
 package com.mlbd.avoya.schemas;
 
+import com.vividsolutions.jts.geom.Point;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,6 +35,9 @@ public class User extends BaseEntity {
   private String currentTracker;
 
   private String name;
+
+  @Column(name = "current_location")
+  private Point currentLocation;
   
   private String nid;
   

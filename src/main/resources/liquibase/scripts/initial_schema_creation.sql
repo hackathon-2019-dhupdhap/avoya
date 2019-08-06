@@ -8,6 +8,7 @@ CREATE TABLE `users` (
  `account_id` INT NOT NULL,
  `current_tracker` varchar(50) DEFAULT NULL,
  `name` varchar(50) DEFAULT NULL,
+ `current_location` POINT DEFAULT NULL,
  `nid` varchar(15) DEFAULT NULL,
  `address` varchar(50) DEFAULT NULL,
  `created_by` int NOT NULL,
@@ -39,9 +40,7 @@ CREATE TABLE `emergency_contacts` (
 CREATE TABLE `stations` (
  `id` int NOT NULL AUTO_INCREMENT,
  `name` varchar(50) NOT NULL,
- `location` POINT
+ `location` POINT NOT NULL,
  `contact` varchar(15) NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-
-
