@@ -25,6 +25,7 @@
     <liquibase.version>3.5.3</liquibase.version>
     <modelmapper.version>0.7.6</modelmapper.version>
     <apache.version>3.8.1</apache.version>
+    <hibernate.spatial.version>5.2.12.Final</hibernate.spatial.version>
   </properties>
 
   <repositories>
@@ -107,6 +108,12 @@
       <groupId>com.vividsolutions</groupId>
       <artifactId>jts</artifactId>
       <version>1.13</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-spatial</artifactId>
+      <version>${hibernate.spatial.version}</version>
     </dependency>
 
   </dependencies>
