@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -90,11 +91,11 @@ public class UserController {
   }
 
   
-  @RequestMapping(value = {"/id"} ,method = RequestMethod.PATCH)
-  public ResponseEntity<Map<String, Integer>> update(@RequestBody final UserDTO userDTO) {
+  @RequestMapping(value = "{id}" ,method = RequestMethod.PATCH)
+  public ResponseEntity<Map<String, Integer>> update(@PathVariable("id") final int id, @RequestBody final UserDTO userDTO) {
     log.info("Updating user with - {}", userDTO);
     
-    User user = new User();
+    User user = userRepository.findByAccountId(id);
     
     if((userDTO.getCurrentTracker() != null) && (!userDTO.getCurrentTracker().isEmpty())) {
       user.setCurrentTracker(userDTO.getCurrentTracker());
