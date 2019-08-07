@@ -11,8 +11,8 @@ import com.mlbd.avoya.schemas.Station;
 public interface StationRepository extends JpaRepository<Station, Integer> {
 
   @Query(
-      value = "select station FROM Station station where mbr_contains(GeomFromText(Concat('LineString(',:northEastPointX,' ',:northEastPointY,', ',:southWestPointX,' ',:southWestPointY,')')), location) = true and abs(:latitude) <= 90.0 and abs(:longitude) <= 180.0 order by GLength(GeomFromText(Concat('LineString(',:latitude,' ',:longitude,', ',X(location),' ',Y(location),')'))) asc",
-      countQuery = "select count(station) FROM Station station where mbr_contains(GeomFromText(Concat('LineString(',:northEastPointX,' ',:northEastPointY,', ',:southWestPointX,' ',:southWestPointY,')')), location) = true and abs(:latitude) <= 90.0 and abs(:longitude) <= 180.0")
+      value = "select station FROM Station station where MBRContains(GeomFromText(Concat('LineString(',:northEastPointX,' ',:northEastPointY,', ',:southWestPointX,' ',:southWestPointY,')')), location) = true and abs(:latitude) <= 90.0 and abs(:longitude) <= 180.0 order by GLength(GeomFromText(Concat('LineString(',:latitude,' ',:longitude,', ',X(location),' ',Y(location),')'))) asc",
+      countQuery = "select count(station) FROM Station station where MBRContains(GeomFromText(Concat('LineString(',:northEastPointX,' ',:northEastPointY,', ',:southWestPointX,' ',:southWestPointY,')')), location) = true and abs(:latitude) <= 90.0 and abs(:longitude) <= 180.0")
   List<Station> search(@Param("latitude") double latitude, @Param("longitude") double longitude,
       @Param("northEastPointX") double northEastPointX,
       @Param("northEastPointY") double northEastPointY,

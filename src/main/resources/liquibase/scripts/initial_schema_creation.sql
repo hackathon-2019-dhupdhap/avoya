@@ -51,7 +51,7 @@ CREATE TABLE `stations` (
 
 CREATE TABLE `complains` (
  `id` int NOT NULL AUTO_INCREMENT,
- `account_id` int NOT NULL UNIQUE,
+ `account_id` int NOT NULL,
  `location` POINT NOT NULL,
  `status` TINYINT(2) NOT NULL,
  `created_by` int(11) NOT NULL DEFAULT '0',
