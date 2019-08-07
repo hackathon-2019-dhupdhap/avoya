@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -75,7 +76,7 @@ public class ComplainController {
     Point point = geometryFactory.createPoint(new Coordinate(complainDTO.getLon(), complainDTO.getLat()));
 
     Complain complain = Complain.builder().
-        status(0).location(point).accountId(user.getAccountId()).build();
+        status("ongoing").location(point).accountId(user.getAccountId()).build();
 
     complainRepository.save(complain);
 
@@ -88,11 +89,13 @@ public class ComplainController {
   }
 
   @PreAuthorize("hasAnyRole('POLICE')")
-  @RequestMapping(value = "/view", method = RequestMethod.GET)
-  public ResponseEntity<String> view() {
-    log.info("Fetching details of user with id {}");
-    System.out.println("hello");    
-    return new ResponseEntity<String>("hello", HttpStatus.OK);
+  @RequestMapping(value = "{id}", method = RequestMethod.GET)
+  public ResponseEntity<?> get(@PathVariable("id") final int id) {
+    Complain complain = complainRepository.getOne(id);
+    ComplainDTO complainDTO = ComplainDTO.builder().accountId(complain.getAccountId())
+        .lat(complain.getLocation().getY()).lon(complain.getLocation().getY())
+        .status(complain.getStatus()).build();
+    return new ResponseEntity<ComplainDTO>(complainDTO, HttpStatus.OK);
   }
   
   private void sms(User user, Account account, List<Station> stations, ComplainDTO complainDTO) {
@@ -123,5 +126,7 @@ public class ComplainController {
     smsService.sendSms(reveivers, body);
     log.info("Message sent");
   }
+
+  
 
 }

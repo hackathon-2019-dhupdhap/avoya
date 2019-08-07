@@ -1,10 +1,16 @@
 package com.mlbd.avoya.modules.user;
 
+import com.mlbd.avoya.Models.ComplainDTO;
 import com.mlbd.avoya.Models.UserDTO;
 import com.mlbd.avoya.Models.UserModel;
 import com.mlbd.avoya.Repositories.EmergencyContactRepository;
+import com.mlbd.avoya.Repositories.StationRepository;
 import com.mlbd.avoya.Repositories.UserRepository;
+import com.mlbd.avoya.conf.Auth;
+import com.mlbd.avoya.schemas.Complain;
 import com.mlbd.avoya.schemas.EmergencyContact;
+import com.mlbd.avoya.schemas.Station;
+import com.mlbd.avoya.schemas.StationComplain;
 import com.mlbd.avoya.schemas.User;
 import com.mlbd.repositories.AccountRepository;
 import com.mlbd.repositories.RoleRepository;
@@ -12,10 +18,13 @@ import com.mlbd.repositories.RoleUserRepository;
 import com.mlbd.schemas.Account;
 import com.mlbd.schemas.Role;
 import com.mlbd.schemas.RoleUser;
+import com.mlbd.services.AccountService;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +53,8 @@ public class UserController {
   private final AccountRepository accountRepository;
   private final RoleUserRepository roleUserRepository;
   private final EmergencyContactRepository emergencyContactRepository;
+  private final Auth auth;
+  private final StationRepository stationRepository;
 
   @RequestMapping(method = RequestMethod.POST)
   public ResponseEntity<Map<String, Integer>> create(@RequestBody final UserDTO userDTO) {
@@ -91,7 +103,35 @@ public class UserController {
     return new ResponseEntity<Map<String, Integer>>(output, HttpStatus.CREATED);
   }
 
-  
+  @PreAuthorize("hasAnyRole('POLICE','CIVILIAN')")
+  @RequestMapping(value = "/me", method = RequestMethod.GET)
+  public ResponseEntity<?> me() {
+    int account_id = auth.currentUser().getId();
+    User user = userRepository.findByAccountId(account_id);
+    if(user == null) {
+      return new ResponseEntity<String>("Error occured", HttpStatus.OK);
+    }
+    Account account = accountRepository.getOne(account_id);
+    UserModel userModel = UserModel.builder()
+        .accountId(user.getAccountId())
+        .address(user.getAddress())
+        .contactNumber(account.getEmail())
+        .currentTracker(user.getCurrentTracker())
+        .name(user.getName())
+        .nid(user.getNid())
+        .build();
+
+    if(user.getCurrentLocation() != null) {
+      userModel.setLat(user.getCurrentLocation().getX());
+      userModel.setLon(user.getCurrentLocation().getY());
+    }
+
+    return new ResponseEntity<UserModel>(userModel, HttpStatus.OK);
+  }
+
+
+
+
   @RequestMapping(value = "{id}" ,method = RequestMethod.PATCH)
   public ResponseEntity<Map<String, Integer>> update(@PathVariable("id") final int id, @RequestBody final UserDTO userDTO) {
     log.info("Updating user with - {}", userDTO);
@@ -115,6 +155,7 @@ public class UserController {
     return new ResponseEntity<Map<String, Integer>>(output, HttpStatus.OK);
   }
 
+  
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
   public ResponseEntity<?> get(@PathVariable("id") final int id) {
     log.info("Fetching details of user with id {}", id);
@@ -130,12 +171,38 @@ public class UserController {
         .contactNumber(account.getEmail())
         .currentTracker(user.getCurrentTracker())
         .name(user.getName())
-        .lat(user.getCurrentLocation().getX())
-        .lon(user.getCurrentLocation().getY())
         .nid(user.getNid())
         .build();
     
+    if(user.getCurrentLocation() != null) {
+      userModel.setLat(user.getCurrentLocation().getX());
+      userModel.setLon(user.getCurrentLocation().getY());
+    }
+    
     return new ResponseEntity<UserModel>(userModel, HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/{id}/complain", method = RequestMethod.GET)
+  public ResponseEntity<?> getByUserId(@PathVariable("id") final int id) {
+
+    Station station = stationRepository.findByAccountId(id);
+    if(station == null) {
+      log.info("No station for user");
+      return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    List<StationComplain> stationComplains = station.getStationComplainList();
+    List<ComplainDTO> complains = new ArrayList<>();
+    
+    for(StationComplain stationComplain: stationComplains) {
+      Complain complain = stationComplain.getComplain();
+      ComplainDTO complainDTO = ComplainDTO.builder().accountId(complain.getAccountId())
+          .lat(complain.getLocation().getY()).lon(complain.getLocation().getY())
+          .status(complain.getStatus()).build();
+      complains.add(complainDTO);
+    }
+    log.info("complains: {}", complains);
+    return new ResponseEntity<List<ComplainDTO>>(complains, HttpStatus.OK);
   }
 
 }
