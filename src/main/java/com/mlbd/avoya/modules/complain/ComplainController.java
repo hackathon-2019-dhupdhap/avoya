@@ -1,28 +1,8 @@
 package com.mlbd.avoya.modules.complain;
 
-import com.mlbd.avoya.Models.ComplainDTO;
-import com.mlbd.avoya.Repositories.ComplainRepository;
-import com.mlbd.avoya.Repositories.EmergencyContactRepository;
-import com.mlbd.avoya.Repositories.StationComplainRepository;
-import com.mlbd.avoya.Repositories.StationRepository;
-import com.mlbd.avoya.Repositories.UserRepository;
-import com.mlbd.avoya.modules.stations.StationService;
-import com.mlbd.avoya.schemas.Complain;
-import com.mlbd.avoya.schemas.Station;
-import com.mlbd.avoya.schemas.StationComplain;
-import com.mlbd.avoya.schemas.User;
-import com.mlbd.avoya.services.SmsService;
-import com.mlbd.repositories.AccountRepository;
-import com.mlbd.repositories.RoleRepository;
-import com.mlbd.repositories.RoleUserRepository;
-import com.mlbd.schemas.Account;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,6 +15,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import com.mlbd.avoya.Models.ComplainDTO;
+import com.mlbd.avoya.Repositories.ComplainRepository;
+import com.mlbd.avoya.Repositories.EmergencyContactRepository;
+import com.mlbd.avoya.Repositories.StationComplainRepository;
+import com.mlbd.avoya.Repositories.StationRepository;
+import com.mlbd.avoya.Repositories.UserRepository;
+import com.mlbd.avoya.modules.devices.NotificationService;
+import com.mlbd.avoya.modules.stations.StationService;
+import com.mlbd.avoya.schemas.Complain;
+import com.mlbd.avoya.schemas.Station;
+import com.mlbd.avoya.schemas.StationComplain;
+import com.mlbd.avoya.schemas.User;
+import com.mlbd.avoya.services.SmsService;
+import com.mlbd.avoya.services.models.NotificationDataDTO;
+import com.mlbd.repositories.AccountRepository;
+import com.mlbd.repositories.RoleRepository;
+import com.mlbd.repositories.RoleUserRepository;
+import com.mlbd.schemas.Account;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
@@ -53,6 +56,7 @@ public class ComplainController {
   private final StationComplainRepository stationComplainRepository;
   private final ComplainRepository complainRepository;
   private final SmsService smsService;
+  private final NotificationService notificationService;
   
   @RequestMapping(method = RequestMethod.POST)
   public ResponseEntity<?> create(@RequestBody final ComplainDTO complainDTO) {
@@ -84,7 +88,7 @@ public class ComplainController {
       StationComplain stationComplain = StationComplain.builder().complain(complain).station(station).build();
       stationComplainRepository.save(stationComplain);
     }
-    
+    this.sendNotification(user, account, stations);
     return new ResponseEntity<>( HttpStatus.OK);
   }
 
@@ -96,6 +100,12 @@ public class ComplainController {
         .lat(complain.getLocation().getY()).lon(complain.getLocation().getY())
         .status(complain.getStatus()).build();
     return new ResponseEntity<ComplainDTO>(complainDTO, HttpStatus.OK);
+  }
+  
+  private void sendNotification(User user, Account account, List<Station> stations) {
+    NotificationDataDTO notification = NotificationDataDTO.builder().name(user.getName()).message("Help Request").build();
+    List<Integer> accountIds = stations.stream().map(Station::getAccountId).collect(Collectors.toList());
+    notificationService.sendNotification(accountIds, notification);
   }
   
   private void sms(User user, Account account, List<Station> stations, ComplainDTO complainDTO) {
