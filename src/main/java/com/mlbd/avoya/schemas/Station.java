@@ -25,6 +25,8 @@ public class Station extends BaseEntity {
   
   private String name;
   
+  private int accountId;
+  
   private Point location;
   
   private String contact;

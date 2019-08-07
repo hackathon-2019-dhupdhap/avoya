@@ -26,7 +26,7 @@ public class Complain extends BaseEntity{
   private static final long serialVersionUID = 4238324308978342620L;
   private Point location;
   
-  private int status;
+  private String status;
   
   @Column(name = "account_id")
   private int accountId;

@@ -10,6 +10,8 @@ import com.mlbd.avoya.schemas.Station;
 @Repository
 public interface StationRepository extends JpaRepository<Station, Integer> {
 
+  Station findByAccountId(int id);
+
   @Query(
       value = "select station FROM Station station where MBRContains(GeomFromText(Concat('LineString(',:northEastPointX,' ',:northEastPointY,', ',:southWestPointX,' ',:southWestPointY,')')), location) = true and abs(:latitude) <= 90.0 and abs(:longitude) <= 180.0 order by GLength(GeomFromText(Concat('LineString(',:latitude,' ',:longitude,', ',X(location),' ',Y(location),')'))) asc",
       countQuery = "select count(station) FROM Station station where MBRContains(GeomFromText(Concat('LineString(',:northEastPointX,' ',:northEastPointY,', ',:southWestPointX,' ',:southWestPointY,')')), location) = true and abs(:latitude) <= 90.0 and abs(:longitude) <= 180.0")

@@ -21,9 +21,9 @@ CREATE TABLE `users` (
 CREATE TABLE `emergency_contacts` (
  `id` int NOT NULL AUTO_INCREMENT,
  `user_id` int NOT NULL,
- `contact_1` varchar(15) NOT NULL,
- `contact_2` varchar(15) NOT NULL,
- `contact_3` varchar(15) NOT NULL,
+ `contact_1` varchar(15) ,
+ `contact_2` varchar(15) ,
+ `contact_3` varchar(15) ,
  `created_by` int(11) NOT NULL DEFAULT '0',
  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
  `updated_by` int(11) NOT NULL DEFAULT '0',
@@ -39,6 +39,7 @@ CREATE TABLE `emergency_contacts` (
 
 CREATE TABLE `stations` (
  `id` int NOT NULL AUTO_INCREMENT,
+ `account_id` int NOT NULL DEFAULT '0',
  `name` varchar(50) NOT NULL,
  `location` POINT NOT NULL,
  `contact` varchar(15) NOT NULL,
@@ -53,7 +54,7 @@ CREATE TABLE `complains` (
  `id` int NOT NULL AUTO_INCREMENT,
  `account_id` int NOT NULL,
  `location` POINT NOT NULL,
- `status` TINYINT(2) NOT NULL,
+ `status` varchar(100) ,
  `created_by` int(11) NOT NULL DEFAULT '0',
  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
  `updated_by` int(11) NOT NULL DEFAULT '0',
