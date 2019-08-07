@@ -58,12 +58,7 @@ CREATE TABLE `complains` (
  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
  `updated_by` int(11) NOT NULL DEFAULT '0',
  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
- PRIMARY KEY (`id`),
- CONSTRAINT `fk_acc` 
- 	FOREIGN KEY (`account_id`) 
- 	REFERENCES `users` (`account_id`) 
- 	ON DELETE NO ACTION 
- 	ON UPDATE NO ACTION
+ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
 CREATE TABLE `station_complain` (

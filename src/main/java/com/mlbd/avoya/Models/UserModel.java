@@ -1,5 +1,6 @@
 package com.mlbd.avoya.Models;
 
+import com.vividsolutions.jts.geom.Point;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,10 @@ public class UserModel {
   private String nid;
 
   private String address;
+  
+  private double lat;
+  
+  private double lon;
   
   private EmergencyContactModel emergencyContactModel;
   

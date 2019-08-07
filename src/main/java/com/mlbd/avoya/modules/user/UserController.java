@@ -6,7 +6,6 @@ import com.mlbd.avoya.Repositories.EmergencyContactRepository;
 import com.mlbd.avoya.Repositories.UserRepository;
 import com.mlbd.avoya.schemas.EmergencyContact;
 import com.mlbd.avoya.schemas.User;
-import com.mlbd.models.AccountDTO;
 import com.mlbd.repositories.AccountRepository;
 import com.mlbd.repositories.RoleRepository;
 import com.mlbd.repositories.RoleUserRepository;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -118,9 +116,13 @@ public class UserController {
   }
 
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
-  public ResponseEntity<UserModel> get(@PathVariable("id") final int id) {
+  public ResponseEntity<?> get(@PathVariable("id") final int id) {
     log.info("Fetching details of user with id {}", id);
     User user = userRepository.findByAccountId(id);
+    if(user == null) {
+      log.info("Invalid user Id");
+      return new ResponseEntity<String>("Invalid user Id", HttpStatus.OK);
+    }
     Account account = accountRepository.getOne(id);
     UserModel userModel = UserModel.builder()
         .accountId(user.getAccountId())
@@ -128,6 +130,8 @@ public class UserController {
         .contactNumber(account.getEmail())
         .currentTracker(user.getCurrentTracker())
         .name(user.getName())
+        .lat(user.getCurrentLocation().getX())
+        .lon(user.getCurrentLocation().getY())
         .nid(user.getNid())
         .build();
     

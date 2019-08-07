@@ -3,7 +3,9 @@ package com.mlbd.avoya.schemas;
 import com.vividsolutions.jts.geom.Point;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -25,8 +27,11 @@ public class Complain extends BaseEntity{
   private Point location;
   
   private int status;
+  
+  @Column(name = "account_id")
+  private int accountId;
 
-  @OneToMany(mappedBy = "request", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "complain", cascade = CascadeType.ALL)
   private List<StationComplain> stationComplainList;
 
 }

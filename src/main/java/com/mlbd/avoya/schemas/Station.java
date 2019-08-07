@@ -1,6 +1,9 @@
 package com.mlbd.avoya.schemas;
 
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
@@ -25,4 +28,7 @@ public class Station extends BaseEntity {
   private Point location;
   
   private String contact;
+
+  @OneToMany(mappedBy = "station", cascade = CascadeType.ALL)
+  private List<StationComplain> stationComplainList;
 }
