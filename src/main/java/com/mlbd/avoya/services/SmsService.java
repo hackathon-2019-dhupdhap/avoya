@@ -28,9 +28,9 @@ public class SmsService {
   public boolean sendSms(List<String> reveivers, String body) {
     Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
-    for (String to : reveivers) {
+    for (String sendTo : reveivers) {
       Message message = Message
-          .creator(new PhoneNumber(to), // to
+          .creator(new PhoneNumber(sendTo), // to
               new PhoneNumber("+15629916632"), // from
               body)
           .create();
