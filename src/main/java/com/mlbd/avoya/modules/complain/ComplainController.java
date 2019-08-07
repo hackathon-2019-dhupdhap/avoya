@@ -64,15 +64,12 @@ public class ComplainController {
     }
 
     //List<Station> stations = new ArrayList<>();
-    System.out.println("entering");
-    List<Station> stations = stationService.search(complainDTO.getLat(), complainDTO.getLon(), 100);
-    System.out.println("done");
-    System.out.println(stations);
+    List<Station> stations = stationService.search(complainDTO.getLat(), complainDTO.getLon(), 2000);
     
     Station station1 = stationRepository.getOne(1);
     stations.add(station1);
-    
-    this.sms(user, account, stations);
+
+    this.sms(user, account, stations, complainDTO);
 
     GeometryFactory geometryFactory = new GeometryFactory();
     Point point = geometryFactory.createPoint(new Coordinate(complainDTO.getLon(), complainDTO.getLat()));
@@ -98,8 +95,12 @@ public class ComplainController {
     return new ResponseEntity<String>("hello", HttpStatus.OK);
   }
   
-  private void sms(User user, Account account, List<Station> stations) {
-    String deeplink = "";
+  private void sms(User user, Account account, List<Station> stations, ComplainDTO complainDTO) {
+    String deeplink = "http://www.google.com/maps/place/";
+    deeplink+=complainDTO.getLat();
+    deeplink+=",";
+    deeplink+=complainDTO.getLon();
+    
     String body = "Need emergency help, name: " + user.getName() + " contact: " + account.getEmail();
     if(user.getCurrentTracker()!= null) 
       body = body + " tracker: "+user.getCurrentTracker();
@@ -118,7 +119,7 @@ public class ComplainController {
         reveivers.add(station.getContact());
       }
     }
-    System.out.println(reveivers);
+    log.info("Sending sms to : {}", reveivers);
     smsService.sendSms(reveivers, body);
     log.info("Message sent");
   }

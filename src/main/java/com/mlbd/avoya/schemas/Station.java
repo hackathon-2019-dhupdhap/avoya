@@ -31,4 +31,13 @@ public class Station extends BaseEntity {
 
   @OneToMany(mappedBy = "station", cascade = CascadeType.ALL)
   private List<StationComplain> stationComplainList;
+
+  @Override
+  public String toString() {
+    return "Station{" +
+        "name='" + name + '\'' +
+        ", location=" + location +
+        ", contact='" + contact + '\'' +
+        '}';
+  }
 }
